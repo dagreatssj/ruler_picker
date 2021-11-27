@@ -21,9 +21,6 @@ RulerPicker(
   height: 100,
 ),
 ```
-# Example
-
-./example
 
 # TODO
 
