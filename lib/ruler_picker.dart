@@ -84,8 +84,8 @@ class RulerPicker extends StatefulWidget {
 class RulerPickerState extends State<RulerPicker> {
   double lastOffset = 0;
   bool isPosFixed = false;
-  late String value;
-  late ScrollController scrollController;
+  String? value;
+  ScrollController? scrollController;
 
   /// default mark
   Widget mark() {
@@ -144,7 +144,7 @@ class RulerPickerState extends State<RulerPicker> {
                     //         .roundToDouble() *
                     //     100);
                     fixPosition(scrollNotification.metrics.pixels.roundToDouble());
-                    scrollController.notifyListeners();
+                    scrollController!.notifyListeners();
                   }
                 }
                 return true;
@@ -208,9 +208,9 @@ class RulerPickerState extends State<RulerPicker> {
   void initState() {
     super.initState();
     scrollController = ScrollController();
-    scrollController.addListener(() {
+    scrollController!.addListener(() {
       setState(() {
-        widget._value = double.parse((scrollController.offset / 10).toStringAsFixed(widget.fractionDigits));
+        widget._value = double.parse((scrollController!.offset / 10).toStringAsFixed(widget.fractionDigits));
         if (widget._value < 0) widget._value = 0;
         if (widget.onValueChange != null) {
           widget.onValueChange(widget._value);
@@ -225,7 +225,7 @@ class RulerPickerState extends State<RulerPicker> {
   @override
   void dispose() {
     super.dispose();
-    scrollController.dispose();
+    scrollController!.dispose();
   }
 
   @override
@@ -237,7 +237,7 @@ class RulerPickerState extends State<RulerPicker> {
     double targetPos = double.parse(curPos.toStringAsFixed(widget.fractionDigits));
     if (targetPos < 0) targetPos = 0;
     // todo animateTo
-    scrollController.jumpTo(
+    scrollController!.jumpTo(
       targetPos,
       // duration: Duration(milliseconds: 500),
       // curve: Curves.easeOut,
@@ -247,7 +247,7 @@ class RulerPickerState extends State<RulerPicker> {
   void setPositionByValue(num value) {
     num targetPos = value * 10;
     if (targetPos < 0) targetPos = 0;
-    scrollController.jumpTo(
+    scrollController!.jumpTo(
       targetPos.toDouble(),
       // duration: Duration(milliseconds: 500),
       // curve: Curves.easeOut,
