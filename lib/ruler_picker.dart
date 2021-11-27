@@ -11,6 +11,7 @@ class _TrianglePainter extends CustomPainter {
   final double lineSize;
 
   _TrianglePainter({this.lineSize = 16});
+
   @override
   void paint(Canvas canvas, Size size) {
     Path path = Path();
@@ -32,10 +33,12 @@ class _TrianglePainter extends CustomPainter {
 
 /// The controller for the ruler picker
 /// init the ruler value from the controller
-/// 用于 RulerPicker 的控制器，可以在构造函数里初始化默认值
+/// used for RulerPickerController，The default value can be initialized in the constructor
 class RulerPickerController extends ValueNotifier<num> {
   RulerPickerController({num value = 0.0}) : super(value);
+
   num get value => super.value;
+
   set value(num newValue) {
     super.value = newValue;
   }
@@ -43,41 +46,46 @@ class RulerPickerController extends ValueNotifier<num> {
 
 typedef void ValueChangedCallback(num value);
 
-/// RulerPicker 标尺选择器
-/// [width] 必须是具体的值，包括父级container的width，不能是 double.infinity，
-/// 可以传入MediaQuery.of(context).size.width
+/// RulerPicker Ruler selector
+/// [width] Must be a specific value, including the width of the parent container, not double.infinity
+/// You can pass in MediaQuery.of(context).size.width
 class RulerPicker extends StatefulWidget {
   final ValueChangedCallback onValueChange;
   final double width;
   final double height;
   final Color backgroundColor;
-  /// the marker on the ruler, default is a arrow
-  final Widget marker;
-  double _value;
+
   /// the fraction digits of the picker value
   int fractionDigits;
-  RulerPickerController controller;
+  RulerPickerController? controller;
+
+  /// the marker on the ruler, default is a arrow
+  final Widget? marker;
+
+  late double _value;
+
   RulerPicker({
-    @required this.onValueChange,
-    @required this.width,
-    @required this.height,
+    required this.onValueChange,
+    required this.width,
+    required this.height,
     this.backgroundColor = Colors.white,
     this.fractionDigits = 0,
     this.controller,
     this.marker,
   });
+
   @override
   State<StatefulWidget> createState() {
     return RulerPickerState();
   }
 }
 
-// todo 实现 animateTo
+// TODO implement animateTo
 class RulerPickerState extends State<RulerPicker> {
   double lastOffset = 0;
   bool isPosFixed = false;
-  String value;
-  ScrollController scrollController;
+  late String value;
+  late ScrollController scrollController;
 
   /// default mark
   Widget mark() {
@@ -149,13 +157,13 @@ class RulerPickerState extends State<RulerPicker> {
                     // constraints: BoxConstraints(maxWidth: 10),
                     padding: index == 0
                         ? EdgeInsets.only(
-                            left: widget.width / 2,
-                          )
+                      left: widget.width / 2,
+                    )
                         : EdgeInsets.zero,
                     child: Container(
                       width: 10,
                       child: Stack(
-                        overflow: Overflow.visible,
+                        clipBehavior: Clip.none,
                         children: <Widget>[
                           Container(
                             width: index % 10 == 0 ? 2 : 1,
@@ -168,16 +176,15 @@ class RulerPickerState extends State<RulerPicker> {
                             left: -25,
                             child: index % 10 == 0
                                 ? Container(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      index.toString(),
-                                      style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 188, 194, 203),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  )
+                              alignment: Alignment.center,
+                              child: Text(
+                                index.toString(),
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 188, 194, 203),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            )
                                 : Container(),
                           ),
                         ],
@@ -203,16 +210,15 @@ class RulerPickerState extends State<RulerPicker> {
     scrollController = ScrollController();
     scrollController.addListener(() {
       setState(() {
-        widget._value = double.parse((scrollController.offset / 10)
-            .toStringAsFixed(widget.fractionDigits));
+        widget._value = double.parse((scrollController.offset / 10).toStringAsFixed(widget.fractionDigits));
         if (widget._value < 0) widget._value = 0;
         if (widget.onValueChange != null) {
           widget.onValueChange(widget._value);
         }
       });
     });
-    widget.controller.addListener(() {
-      setPositionByValue(widget.controller.value);
+    widget.controller!.addListener(() {
+      setPositionByValue(widget.controller!.value);
     });
   }
 
@@ -227,14 +233,10 @@ class RulerPickerState extends State<RulerPicker> {
     super.didUpdateWidget(oldWidget);
   }
 
-  /// 滑动后修正标记，使之对齐
   void fixPosition(double curPos) {
-    print('curPos: ${curPos}');
-    double targetPos =
-        double.parse(curPos.toStringAsFixed(widget.fractionDigits));
-    print('targetPos: ${targetPos}');
+    double targetPos = double.parse(curPos.toStringAsFixed(widget.fractionDigits));
     if (targetPos < 0) targetPos = 0;
-    // todo animateTo 异步操作
+    // todo animateTo
     scrollController.jumpTo(
       targetPos,
       // duration: Duration(milliseconds: 500),
@@ -242,7 +244,6 @@ class RulerPickerState extends State<RulerPicker> {
     );
   }
 
-  /// 根据数值设置标记位置
   void setPositionByValue(num value) {
     num targetPos = value * 10;
     if (targetPos < 0) targetPos = 0;

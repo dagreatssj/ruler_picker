@@ -1,14 +1,13 @@
-# ruler_picker   标尺选择器
+# ruler_picker
 
 This is a picker with ruler style for flutter.
 
-标尺样式来选择数字，支持自定义 marker
 
-# demo    演示
+# demo
 
 ![demo](https://i.imgur.com/zYizFdT.gif)
 
-# Usage   使用方法
+# Usage
 
 ```
 RulerPicker(
@@ -22,12 +21,12 @@ RulerPicker(
   height: 100,
 ),
 ```
-# Example 示例代码
+# Example
 
-./example 文件夹
+./example
 
 # TODO
 
-- [ ] 支持多精度
-- [ ] 支持自定义标记
-- [ ] 支持起止范围
+- [ ] multiple precision
+- [ ] custom marker
+- [ ] start and end range
